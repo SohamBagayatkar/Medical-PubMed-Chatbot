@@ -1,12 +1,51 @@
 import streamlit as st
-import plotly.express as px
 import pandas as pd
-import re
-import time
-import json
+import plotly.express as px
+import plotly.graph_objects as go
+from mistral_chains import run_comparison
+import numpy as np
 
-st.set_page_config(page_title="Data Visualization", layout="wide")
-st.title("📈 Data Visualization")
+st.set_page_config(page_title="📊 Medical Article Comparison", layout="wide")
+
+with st.sidebar:
+    st.image("https://s3ktech.ai/wp-content/uploads/2025/03/S3Ktech-Logo.png", width=140)
+
+# Custom CSS for better styling
+st.markdown("""
+    <style>
+    .main {
+        padding: 2rem;
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 2rem;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 4rem;
+        white-space: pre-wrap;
+        background-color: #f0f2f6;
+        border-radius: 4px 4px 0 0;
+        gap: 1rem;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #ffffff;
+    }
+    .metric-card {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Title with description
+st.title("📊 Comparative Visualization of PubMed Articles")
+st.markdown("""
+    This page provides interactive visualizations and comparisons of key metrics from the analyzed medical articles.
+    Use the tabs below to explore different aspects of the data.
+""")
 
 # Check if articles are available
 if not st.session_state.get('articles'):

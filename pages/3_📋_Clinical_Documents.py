@@ -12,6 +12,10 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 import io
 
 st.set_page_config(page_title="Clinical Documents", layout="wide")
+
+with st.sidebar:
+    st.image("https://s3ktech.ai/wp-content/uploads/2025/03/S3Ktech-Logo.png", width=140)
+
 st.title("📋 Clinical Documents")
 
 # Check if articles are available in session state

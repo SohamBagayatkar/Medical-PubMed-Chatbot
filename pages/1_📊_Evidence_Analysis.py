@@ -4,6 +4,10 @@ from mistral_chains import answer_user_query
 import pandas as pd
 
 st.set_page_config(page_title="Evidence Analysis", layout="wide")
+
+with st.sidebar:
+    st.image("https://s3ktech.ai/wp-content/uploads/2025/03/S3Ktech-Logo.png", width=140)
+
 st.title("📊 Evidence Analysis")
 
 # Initialize session state variables
