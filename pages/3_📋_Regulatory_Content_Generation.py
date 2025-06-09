@@ -16,7 +16,7 @@ st.set_page_config(page_title="Clinical Documents", layout="wide")
 with st.sidebar:
     st.image("https://s3ktech.ai/wp-content/uploads/2025/03/S3Ktech-Logo.png", width=140)
 
-st.title("📋 Clinical Documents")
+st.title("📋 Regulatory Content Generation")
 
 # Check if articles are available in session state
 if "articles" not in st.session_state or st.session_state.articles is None:
@@ -104,7 +104,7 @@ def create_clinical_protocol(articles_data, patient_info):
     doc = Document()
     
     # Title
-    title = doc.add_heading('Clinical Protocol', 0)
+    title = doc.add_heading('Regulatory Content Generation', 0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     # Patient Information

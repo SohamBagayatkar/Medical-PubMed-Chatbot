@@ -3,12 +3,12 @@ from pubmed_utils import fetch_pubmed_articles, extract_pmids_from_text
 from mistral_chains import answer_user_query
 import pandas as pd
 
-st.set_page_config(page_title="Evidence Analysis", layout="wide")
+st.set_page_config(page_title="Articles Summaries", layout="wide")
 
 with st.sidebar:
     st.image("https://s3ktech.ai/wp-content/uploads/2025/03/S3Ktech-Logo.png", width=140)
 
-st.title("📊 Evidence Analysis")
+st.title("📊 Article Summaries")
 
 # Initialize session state variables
 for key in ['articles', 'analysis_complete', 'metadata_df', 'summaries', 

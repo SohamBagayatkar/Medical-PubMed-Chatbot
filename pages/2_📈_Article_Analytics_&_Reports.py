@@ -4,8 +4,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 from mistral_chains import run_comparison
 import numpy as np
+import re
 
-st.set_page_config(page_title="📊 Medical Article Comparison", layout="wide")
+st.set_page_config(page_title="📊 Article Analytics & Reports", layout="wide")
 
 with st.sidebar:
     st.image("https://s3ktech.ai/wp-content/uploads/2025/03/S3Ktech-Logo.png", width=140)
