@@ -1,101 +1,123 @@
 import streamlit as st
-from pubmed_utils import fetch_pubmed_articles, extract_pmids_from_urls, search_pubmed_by_keyword
-from vector_store import build_faiss_vectorstore
-from mistral_chains import answer_user_query  # Import the centralized function
 
-st.set_page_config(page_title="🧠 Medical PubMed Chatbot", layout="wide")
-st.title("🩺 Medical Chatbot for PubMed Articles")
-
-# -------- Step 1: Input Mode --------
-input_mode = st.selectbox(
-    "Choose Input Mode", 
-    ["Enter PMID", "Paste URL", "Search by Keyword", "Paste Raw Text"]
+st.set_page_config(
+    page_title="Medical PubMed Analysis",
+    page_icon="🩺",
+    layout="wide"
 )
 
-user_inputs = []
-if input_mode == "Enter PMID":
-    user_inputs = st.text_area("Enter up to 10 PMIDs (comma-separated)").split(",")
+with st.sidebar:
+    st.image("https://s3ktech.ai/wp-content/uploads/2025/03/S3Ktech-Logo.png", width=140)
 
-elif input_mode == "Paste URL":
-    urls = st.text_area("Paste up to 10 PubMed URLs (one per line)").splitlines()
-    user_inputs = extract_pmids_from_urls(urls)
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
-elif input_mode == "Search by Keyword":
-    keyword = st.text_input("Enter keyword for PubMed search")
+    html, body, [class*="st-"] {
+        font-family: 'Roboto', sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 700;
+        color: #2c3e50; /* Darker heading color */
+    }
+    .stButton>button {
+        background-color: #3498db; /* Blue button */
+        color: white;
+        border-radius: 8px;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .stButton>button:hover {
+        background-color: #2980b9; /* Darker blue on hover */
+    }
+    .stAlert {
+        border-radius: 8px;
+        box_shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .stMarkdown {
+        line-height: 1.6;
+        font-size: 1.1em;
+    }
+    .stTextInput>div>div>input {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        padding: 10px;
+    }
+    .css-1d391kg.e16z5zjs3 {
+        background-color: #f8f9fa; /* Light gray background for sidebar */
+        padding: 20px;
+        border-right: 1px solid #e9ecef;
+    }
+    .main .block-container {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+    }
+    .footer {
+        font-size: 0.9em;
+        color: #6c757d;
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+</style>
+"""
+, unsafe_allow_html=True)
 
-    if "searched_pmids" not in st.session_state:
-        st.session_state.searched_pmids = []
+st.title("🩺 Medical PubMed Analysis Tool")
+st.markdown("""
+    A comprehensive tool for analyzing medical research articles from PubMed.
+    Streamline your literature review, data extraction, and report generation.
+"""
+)
 
-    if keyword and st.button("Search"):
-        searched_pmids = search_pubmed_by_keyword(keyword)
-        st.session_state.searched_pmids = searched_pmids
-        st.success(f"Top {len(searched_pmids)} articles fetched.")
+st.markdown("""
+## Welcome to the Medical PubMed Analysis Tool
 
-    user_inputs = st.session_state.searched_pmids
+This tool helps you analyze medical research articles from PubMed in a structured way. Follow these steps:
 
-elif input_mode == "Paste Raw Text":
-    raw_text = st.text_area("Paste full reference text with PMIDs", height=300)
-    
-    import re
-    def extract_pmids_from_text(text):
-        pmid_pattern = r"PMID: (\d+)"
-        return re.findall(pmid_pattern, text)
+### Step 1: Search on PubMed
+1. Go to [PubMed](https://pubmed.ncbi.nlm.nih.gov/)
+2. Perform your search
+3. Save the results as a text file (use the 'Save' button on PubMed)
 
-    if raw_text:
-        user_inputs = extract_pmids_from_text(raw_text)
-        if not user_inputs:
-            st.warning("❗ No valid PMIDs found in the pasted text.")
-        else:
-            st.success(f"✅ Found {len(user_inputs)} PMIDs.")
+### Step 2: Upload and Process
+1. Go to the "Evidence Analysis" page
+2. Upload your saved PubMed results
+3. Click "Process Articles" to analyze the content
 
+### Step 3: Explore the Results
+The tool will generate:
+- Overall evidence summary
+- Metadata table
+- Individual article summaries
+- Comparative analysis
+- Clinical conclusions
 
+### Step 4: Visualize Data
+Visit the "Data Visualization" page to see:
+- Healing rates comparison
+- Adverse event rates
+- Time to symptom relief
+- Drug interaction risks
 
-# Clean input and limit to 10
-user_inputs = [pmid.strip() for pmid in user_inputs if pmid.strip()]
-if len(user_inputs) > 10:
-    st.error("⚠️ Please enter only up to 10 articles.")
-    st.stop()
+### Step 5: Generate Clinical Documents
+The "Clinical Documents" page provides:
+- Clinical Trial Protocol Introduction (ICH M11 format)
+- Clinical Study Report Discussion (TransCelerate format)
 
-# -------- Step 2: Fetch Articles --------
-if len(user_inputs) > 0:
-    if st.button("Fetch Articles"):
-            with st.spinner("🔎 Fetching PubMed articles..."):
-                articles = fetch_pubmed_articles(user_inputs)
-                if not articles:
-                    st.warning("⚠️ No articles were retrieved.")
-                    st.stop()
+## Getting Started
+Click on "Evidence Analysis" in the sidebar to begin!
+"""
+)
 
-        # Store articles in session state
-            st.session_state.articles = articles
-            st.success("✅ Articles fetched successfully.")
-
-# -------- Step 3: Query Input --------
-if "articles" in st.session_state:
-    articles = st.session_state.articles
-
-    st.subheader("📄 Retrieved Articles")
-    for i, art in enumerate(articles, 1):
-        st.markdown(f"**{i}. {art['title']}**")
-
-    # Prepare article text for processing
-    articles_text = "\n\n".join(
-        f"Title: {a['title']}\nAuthors: {', '.join(a['authors'])}\nAbstract: {a['abstract']}"
-        for a in articles
-    )
-
-    st.session_state.articles_text = articles_text
-
-    # Input query
-    st.subheader("💬 Ask Your Question")
-    user_query = st.text_input("e.g., Compare the studies based on side effects")
-
-    if st.button("Run Query"):
-        if not user_query:
-            st.warning("Please enter a query.")
-        else:
-            with st.spinner("🧠 Processing your query..."):
-                # Pass all three parameters here as per your mistral_chains.py function signature
-                response = answer_user_query(user_query, articles, articles_text)
-
-            st.markdown("### 📝 Response")
-            st.markdown(response)
+st.markdown("""
+<div class="footer">
+    © 2024 S3K Technologies | All rights reserved
+</div>
+"""
+, unsafe_allow_html=True)

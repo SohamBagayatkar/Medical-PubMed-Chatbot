@@ -3,10 +3,20 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 import os
 from dotenv import load_dotenv
+import streamlit as st
 from memory_manager import get_mistral_with_memory
 
+# Load environment variables from .env file
 load_dotenv()
-mistral_api_key = os.getenv("MISTRAL_API_KEY")
+
+# Try to get API key from Streamlit secrets first, fall back to environment variable
+try:
+    mistral_api_key = st.secrets["MISTRAL_API_KEY"]
+except:
+    mistral_api_key = os.getenv("MISTRAL_API_KEY")
+
+if not mistral_api_key:
+    raise ValueError("MISTRAL_API_KEY not found in either Streamlit secrets or environment variables")
 
 llm = ChatMistralAI(api_key=mistral_api_key, temperature=0.3)
 

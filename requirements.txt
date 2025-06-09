@@ -1,8 +1,11 @@
 streamlit
 langchain
+langchain-community
 langchain_mistralai
 faiss-cpu
 biopython
 python-dotenv
 pandas
 plotly
+python-docx==0.8.11
+tenacity>=8.0.1
